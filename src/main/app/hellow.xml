@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="127.6.96.1" port="8080" doc:name="HTTP Listener Configuration"/>
+    <flow name="hellowFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
+        <set-variable variableName="lang" value="#[message.inboundProperties.'http.query.params'.lang]" doc:name="set lang"/>
+        <logger message="Flow vars: #[flowVars]" level="INFO" doc:name="Logger"/>
+        <choice doc:name="Choice">
+            <when expression="#[flowVars.lang == 'fr']">
+                <set-payload value="Bonjour le monde" doc:name="Set Payload for fr"/>
+            </when>
+            <when expression="#[flowVars.lang == 'de']">
+                <set-payload value="Hallo Welt" doc:name="Set Payload for de"/>
+            </when>
+            <otherwise>
+                <set-payload value="Hello world" doc:name="Set default Payload"/>
+            </otherwise>
+        </choice>
+        <logger message="Responding with:  &quot;#[message.payload]&quot;; for lang &lt;#[flowVars.lang]&gt;" level="INFO" doc:name="Logger"/>
+    </flow>
+</mule>
